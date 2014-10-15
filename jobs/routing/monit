@@ -1,4 +1,4 @@
-check file path /var/vcap/sys/run/routing.done
+check file routing.done path /var/vcap/sys/run/routing.done
   start program "/var/vcap/jobs/routing/bin/routing.ctl start"
   stop program "/var/vcap/jobs/routing/bin/routing.ctl stop"
   group vcap

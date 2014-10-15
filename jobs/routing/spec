@@ -6,10 +6,9 @@ templates:
 
 properties:
   routing.default_gw: 
-   description: override default gateway
-  routing.routes.subnet:
-    description: Subnet concerned by the route
-  routing.routes.netmask:
-    description: Netmask concerned by the route
-  routing.routes.gateway: 
-    description: gateway concerned by the route
+    default: ""
+    description: override default gateway
+  routing.routes:
+    description: Route to be added propertie are subnet netmask gateway 
+
+packages: {}

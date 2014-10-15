@@ -1,0 +1,47 @@
+#!/bin/sh
+set +e
+
+#Remove default GW
+set_default_gw(){
+   DEFAULT_GW  = `ip route show | grep default | awk '{print $3}' | sed "s/\./\\-/g"`
+   if [ ${DEFAULT_GW} == <%= p("routing.default_gw").gsub(/\./,"-") %> ]; then
+     echo "Gateway already set"
+   else
+     echo "Removing old gateway "
+     route remove default gw "${DEFAULT_GW}"
+     if [ $? == 0 ]; then ; 	echo " ... succeed " ;  else ; echo " ... failed" ; fi
+     echo "Setting new gateway "
+     route add default gw <%= p("routing.default_gw") %>
+      if [ $? == 0 ]; then ; 	echo " ... succeed " ;  else ; echo " ... failed" ; fi
+     fi
+
+   fi	
+}
+
+case "$1"
+ start)
+     
+     #Remove default gateway
+     set_default_gw
+     #add route
+     <% if_p("routing.routes") do |route| %>
+     route add -net <%= route["subnet"] %> netmask <%= route["netmask"] %> gw <%= route["gateway"] || p("routing.default_gw")  %>
+     <% end %>
+
+     #Create file
+     echo "applied" >> /var/vcap/sys/run/routing.done
+
+     ;;
+ stop)
+    #Remove route
+       #add route
+#     <% if_p("routing.routes") do |route| %>
+#     route del -net <%= route["subnet"] %> netmask <%= route["netmask"] %> gw <%= route["gateway"] || p("routing.default_gw")  %>
+#     <% end %>
+     ;;
+
+esac
+exit 0
+
+
+

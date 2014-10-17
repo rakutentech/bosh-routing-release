@@ -14,4 +14,3 @@ config/dev.yml
 dev_releases
 manifest/*
 !manifest/dev.yml
-

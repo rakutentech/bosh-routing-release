@@ -1,30 +1,28 @@
 Routing release
-===================
+===============
 
-This bosh release is a small release which apply a shell script during the start / stop of monit
-The shell script will change the route table and the default gateway as requested.
+The BOSH release that changes the route table and the default gateway.
+Changes to the routing table will be made when `routing` job starts/stops.
 
+Only tested with Ubuntu Trusty.
 
-Only tested with ubuntu.
+Usage
+-----
 
+To customize routing on the machine collocate `routing` release job
+and specify routing properties.
 
-
-
-Properties
--------------
-
+For example to add extra route entries to the CF router VM:
 
 ```
-//You can co-locate this template
-- name: routing
-  release: routing
-- name: gorouter
-
-
+jobs:
+...
 - name: router
   instances: 2
-  networks:
-  ...
+  templates:
+  - {name: gorouter, release: cf}
+  - {name: routing, release: routing}
+  networks: [...]
   properties:
     ...
     routing:
@@ -33,16 +31,9 @@ Properties
       - subnet: 123.456.0.0
         netmask: 255.192.0.0
         gateway: 123.424.235.254
-templates: //You can co-locate this template
-- name: routing
-  release: routing
-- name: gorouter
-...   
-
 ```
 
-TODO
--------------
+Todo
+----
 
-A lot of todo, more than I can write ....
-
+* Properly remove routing entries when job is stopped

@@ -1,14 +1,14 @@
 ---
 name: routing
+
 templates:
- routing_ctl.erb:  bin/routing.ctl
- 
+  routing_ctl.erb: bin/routing.ctl
+
+packages: []
 
 properties:
-  routing.default_gw: 
-    default: ""
+  routing.default_gw:
     description: override default gateway
+    default: ""
   routing.routes:
     description: Route to be added propertie are subnet netmask gateway 
-
-packages: {}

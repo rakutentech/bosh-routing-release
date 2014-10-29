@@ -1,48 +1,49 @@
 #!/bin/sh
+
 set +e
 
-#Remove default GW
-set_default_gw(){
-  #Removing all default GW 
+# Remove default GW
+set_default_gw() {
+  # Removing all default GW
   for defautgw in $(ip route show | grep default | awk '{print $3}')
   do
     echo "Removing old gateway $defautgw"
-     route del default gw "$defautgw"
-     if [ $? != 0 ]; then
-       echo " ... failed "
-     else
-       echo " ... suceed "
-     fi
+    route del default gw "$defautgw"
+    if [ $? != 0 ]; then
+      echo " ... failed "
+    else
+      echo " ... suceed "
+    fi
   done
-  echo "Setting new gateway "
+
+  echo "Setting new gateway"
   route add default gw <%= p("routing.default_gw") %>
 }
 
 case "$1" in
- start)
+  start)
+    # Remove default gateway
+    set_default_gw
 
-     #Remove default gateway
-     set_default_gw
-     #add route
-     <% p("routing.routes").each do |route| %>
-     route add -net <%= route["subnet"] %> netmask <%= route["netmask"] %> gw <%= route["gateway"] || p("routing.default_gw")  %>
-     <% end %>
+    # Add routes
+    <% p("routing.routes").each do |route| %>
+    route add -net <%= route["subnet"] %> netmask <%= route["netmask"] %> gw <%= route["gateway"] || p("routing.default_gw")  %>
+    <% end %>
 
-     #Create file
-     echo "applied" >> /var/vcap/sys/run/routing.done
+    # Create file
+    echo "applied" >> /var/vcap/sys/run/routing.done
 
-     ;;
- stop)
-     rm /var/vcap/sys/run/routing.done
-       #No need to remove route for now
-       #add route
-#     <% p("routing.routes").each do |route| %>
-#     route del -net <%= route["subnet"] %> netmask <%= route["netmask"] %> gw <%= route["gateway"] || p("routing.default_gw")  %>
-#     <% end %>
-     ;;
+    ;;
+
+  stop)
+    rm /var/vcap/sys/run/routing.done
+
+    # <% p("routing.routes").each do |route| %>
+    # route del -net <%= route["subnet"] %> netmask <%= route["netmask"] %> gw <%= route["gateway"] || p("routing.default_gw")  %>
+    # <% end %>
+
+    ;;
 
 esac
+
 exit 0
-
-
-
